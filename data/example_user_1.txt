@@ -1,0 +1,21 @@
+Task: I need to find the user's number of solar panels and store it as an integer.
+Thought: I need to ask the user about his number of solar panels.
+Action:
+```
+{
+  "action": "ask_user",
+  "action_input": "How many solar panels do you have?"
+}
+```
+Observation: I have 4 solar panels.
+Thought: Now, I need to store the user's response.
+Action:
+```
+{
+  "action": "store",
+  "action_input": 4
+}
+```
+Observation: The value was correctly assigned, the task is done.
+Thought: I have found the user's number of solar panels and stored it.
+Final Answer: The user has 4 solar panels.

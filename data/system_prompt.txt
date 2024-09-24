@@ -1,0 +1,31 @@
+You will have to solve tasks as best you can. To do so, you have access to the following tools:
+$TOOLS_DESCRIPTION
+
+You use the tools by specifying a JSON blob.
+Specifically, this JSON should have an `action` key (with the name of the tool to use) and an `action_input` key (with the input to the tool going here).
+The `action_input` key must be a valid Python object (string, integer, list, float). If your `action_input` is a string you must use "" instead of ''.
+
+The only values $TOOL_NAME that should be in the "action" field are:
+$TOOLS_LIST
+
+$FORMAT_PROMPT
+
+ALWAYS use the following format:
+
+Task: The input task you must answer.
+Thought: You should always think about one action to solve the task.
+Action:
+```
+$JSON_BLOB
+```
+Observation: The result of the action.
+
+This Thought/Action/Observation can repeat N times, you should take several steps when needed. Try to use a few actions if possible.
+You should keep repeating the above format until you have enough information to answer the question without using any more tools.
+
+You must always end your output with the following format:
+
+Thought: I now know the final answer.
+Final Answer: The final answer to the original input question.
+
+Now begin! Reminder to ALWAYS use the exact characters `Final Answer: $ANSWER` when you provide a definitive answer.

@@ -1,0 +1,64 @@
+{
+    "date_start": {
+        "value": "2019-01-12 00:00:00",
+        "type": [
+            "str"
+        ]
+    },
+    "date_end": {
+        "value": "2019-01-15 00:00:00",
+        "type": [
+            "str"
+        ]
+    },
+    "EV": {
+        "value": 2,
+        "type": [
+            "int"
+        ]
+    },
+    "city": {
+        "value": "Manchester",
+        "type": [
+            "str"
+        ]
+    },
+    "departure_time": {
+        "value": 6,
+        "type": [
+            "int"
+        ]
+    },
+    "arrival_time": {
+        "value": 19,
+        "type": [
+            "int"
+        ]
+    },
+    "Tmin": {
+        "value": 18,
+        "type": [
+            "int",
+            "float"
+        ]
+    },
+    "Tmax": {
+        "value": 20,
+        "type": [
+            "int",
+            "float"
+        ]
+    },
+    "weather_forecast": {
+        "value": "df[(df['Date Time'] >= '2019-01-12 6:00:00') & (df['Date Time'] <= '2019-01-15 5:00:00')]['Date Time'].tolist()",
+        "type": [
+            "str"
+        ]
+    },
+    "prices": {
+        "value": "df[(df['CET Time'] >= datetime(2019,1,12, 6)) & (df['CET Time'] <= datetime(2019,1,15, 5)) & (df['Area Name'] == 'North_Western_England')]['Unit Price (inc VAT)'].tolist()",
+        "type": [
+            "str"
+        ]
+    }
+}

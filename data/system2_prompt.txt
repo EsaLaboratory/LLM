@@ -1,0 +1,13 @@
+You will have to solve tasks as best you can. To do so, you have access to the following tools:
+$TOOLS_DESCRIPTION
+
+You use the tools by specifying a JSON blob.
+Specifically, this JSON should have an `action` key (with the name of the tool to use) and an `action_input` key (with the input to the tool going here).
+The `action_input` key must be a valid Python object (string, integer, list, float). If your `action_input` is a string you must use "" instead of ''.
+
+The only values $TOOL_NAME that should be in the "action" field are:
+$TOOLS_LIST
+
+$FORMAT_PROMPT
+
+Now begin!

@@ -1,0 +1,15 @@
+```
+{
+  "action": "ask_user",
+  "action_input": "How many solar panels do you have?"
+}
+```
+I have 4 solar panels.
+```
+{
+  "action": "store",
+  "action_input": 4
+}
+```
+The value was correctly assigned, the task is done.
+I have found the user's number of solar panels and stored it.

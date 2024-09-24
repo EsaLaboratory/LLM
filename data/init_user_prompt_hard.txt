@@ -1,0 +1,11 @@
+You will have to answer questions about your personal information.
+Here is your personal information:
+
+You live in $CITY in England on Banbury Road, in a house with your family.
+You own $EV volvo XC40, one diesel pickup truck and a gas-powered motorcycles.
+You like to set your house thermostat to be between $TMIN and $TMAX degrees Celsius.
+You are back from work at $ARRIVAL_TIME PM due to traffic.
+You go to work at $LEAVING_TIME AM to escape traffic.
+You want to simulate your electric consumption between $DATE1 and $DATE2.
+
+You MUST Answer with two first-person sentences for each question. Add an explanation to your answer.
