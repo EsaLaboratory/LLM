@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Readme File &#8212; LLM 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css?v=658d757c" />
+    
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="scripts" href="modules.html" />
+    <link rel="prev" title="Welcome to LLM’s documentation!" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to LLM’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Readme File</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="readme-file">
+<h1>Readme File<a class="headerlink" href="#readme-file" title="Link to this heading">¶</a></h1>
+<section id="llm-interface-between-user-data-and-optimization-model-for-demand-side-flexibility">
+<h2>LLM interface between user, data and optimization model for demand side flexibility<a class="headerlink" href="#llm-interface-between-user-data-and-optimization-model-for-demand-side-flexibility" title="Link to this heading">¶</a></h2>
+<section id="table-of-contents">
+<h3>Table of contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Description</p></li>
+<li><p>Project structure</p></li>
+<li><p>Instalation</p></li>
+<li><p>Documentation</p></li>
+<li><p>Usage</p></li>
+</ul>
+</section>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h3>
+<p>This project defines an interface between a user (humand or LLM based), an Large Language Model (LLM) agent and a home energy management system (HEMS). The goal is to provide make home energy management accessible for everyone.</p>
+</section>
+<section id="project-structure">
+<h3>Project structure<a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h3>
+<p>Here is a description of the project architecture</p>
+<ul class="simple">
+<li><p>data</p>
+<ul>
+<li><p>default folder where data is saved</p></li>
+</ul>
+</li>
+<li><p>doc</p>
+<ul>
+<li><p>folder containing all documentation</p></li>
+</ul>
+</li>
+<li><p>img</p>
+<ul>
+<li><p>default folder where the figures are saved</p></li>
+</ul>
+</li>
+<li><p>scripts</p>
+<ul>
+<li><p>graph.py</p>
+<ul>
+<li><p>Extract test data and create graphs</p></li>
+</ul>
+</li>
+<li><p>home_management.py</p>
+<ul>
+<li><p>Defines the optimization problem</p></li>
+</ul>
+</li>
+<li><p>main.py</p>
+<ul>
+<li><p>Call the global pipeline</p></li>
+</ul>
+</li>
+<li><p>optim.py</p>
+<ul>
+<li><p>Create and model a default user</p></li>
+</ul>
+</li>
+<li><p>precision.py</p>
+<ul>
+<li><p>LLM user precision testing script</p></li>
+</ul>
+</li>
+<li><p>react.py</p>
+<ul>
+<li><p>Defines the LLM agent</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>llm_test.sh</p>
+<ul>
+<li><p>slurm file to test repo</p></li>
+</ul>
+</li>
+<li><p>README.md</p></li>
+<li><p>requirements.txt</p>
+<ul>
+<li><p>list all required libraries in pip format</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="instalation">
+<h3>Instalation<a class="headerlink" href="#instalation" title="Link to this heading">¶</a></h3>
+<p>Several installation are possible. We will describe a simple one. Please consider that they are many dependencies, you will have to have sufficient storage to install and use the code of this repository.</p>
+<p>with pip :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>env
+<span class="nb">source</span><span class="w"> </span>env/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h3>
+<p>The documentation is generated by the sphinx library. You should activate a python environment with sphinx installed. Here is a list of the command to access the html version :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>doc
+make<span class="w"> </span>html
+python<span class="w"> </span>-m<span class="w"> </span>http.server
+</pre></div>
+</div>
+<p>Please note that in windows powershell you should use <code class="docutils literal notranslate"><span class="pre">.\make</span></code> instead of <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p>
+<p>The documentation will then be available on the following <a class="reference external" href="http://localhost:8000/build/html/index.html">link</a>.</p>
+<p>The html file is also accessible here : ./doc/build/html/index.html.</p>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h3>
+<p>This repositery defines multiples functions and class.</p>
+<p>To try the global pipeline without going into the full definition of the different tools, a basic usage of the scripts would be to run the main.py file. However take into account that using LLM requires a lot of RAM and memory (the LLM used in the scripts needs 15G). You will also need a GPU to make the LLM’s inference faster.</p>
+<p>The first thing you can try is to test this <a class="reference external" href="https://colab.research.google.com/drive/1L43Q2GwPmmTT01gUzhhLRDjt2RTUKqOD?usp=sharing">google colab notebook</a>.</p>
+<p>For people having access to Oxford’s supercomputer, is recommanded to use the repository with arc htc.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>-X<span class="w"> </span>oxfd2564@htc-login.arc.ox.ac.uk
+</pre></div>
+</div>
+<p>After you have cloned the repo, you try the scripts by submitting a slurm file to the cluster.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>llm_test.sh
+</pre></div>
+</div>
+<p>This will creates a user with random settings (modeled by an LLM), an LLM agent that will ask questions to the user and retrieve information (ex: weather forecast) to find the problem’s parameters and then the problem will be optimized.</p>
+<p>You will be able to monitor the output with those commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>squeue<span class="w"> </span>-u<span class="w"> </span><span class="nv">$username</span>
+</pre></div>
+</div>
+<p>Or you can also check the <code class="docutils literal notranslate"><span class="pre">slurm-$jobid.out</span></code> file. When the job is done, you will see the modelling output in the <code class="docutils literal notranslate"><span class="pre">img</span></code> folder and in the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder all the retrieved information will be stored in the file <code class="docutils literal notranslate"><span class="pre">args.json</span></code>.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Readme File</a><ul>
+<li><a class="reference internal" href="#llm-interface-between-user-data-and-optimization-model-for-demand-side-flexibility">LLM interface between user, data and optimization model for demand side flexibility</a><ul>
+<li><a class="reference internal" href="#table-of-contents">Table of contents</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#project-structure">Project structure</a></li>
+<li><a class="reference internal" href="#instalation">Instalation</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to LLM’s documentation!</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="next chapter">scripts</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/README.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to LLM’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Readme File</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, MICHELON.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>

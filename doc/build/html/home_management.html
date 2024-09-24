@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>home_management module &#8212; LLM 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css?v=658d757c" />
+    
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="react module" href="react.html" />
+    <link rel="prev" title="scripts" href="modules.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="react.html" title="react module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="scripts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">scripts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">home_management module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-home_management">
+<span id="home-management-module"></span><h1>home_management module<a class="headerlink" href="#module-home_management" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="home_management.Market">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">home_management.</span></span><span class="sig-name descname"><span class="pre">Market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Market" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a basic electricity market.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Market.prices">
+<span class="sig-name descname"><span class="pre">prices</span></span><a class="headerlink" href="#home_management.Market.prices" title="Link to this definition">¶</a></dt>
+<dd><p>A list of electricity prices.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Market.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#home_management.Market.dt" title="Link to this definition">¶</a></dt>
+<dd><p>The time delta.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Market.N">
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#home_management.Market.N" title="Link to this definition">¶</a></dt>
+<dd><p>The number of optimization point.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="home_management.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">home_management.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a basic user model.</p>
+<p>A Model instance able to optimize one user’s consumption.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.EV">
+<span class="sig-name descname"><span class="pre">EV</span></span><a class="headerlink" href="#home_management.Model.EV" title="Link to this definition">¶</a></dt>
+<dd><p>The number of electric vehicules.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.departure_time">
+<span class="sig-name descname"><span class="pre">departure_time</span></span><a class="headerlink" href="#home_management.Model.departure_time" title="Link to this definition">¶</a></dt>
+<dd><p>The leaving date of the vehicule (morning).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.arrival_time">
+<span class="sig-name descname"><span class="pre">arrival_time</span></span><a class="headerlink" href="#home_management.Model.arrival_time" title="Link to this definition">¶</a></dt>
+<dd><p>The arrival date of the vehicule (end of the day).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.Tmin">
+<span class="sig-name descname"><span class="pre">Tmin</span></span><a class="headerlink" href="#home_management.Model.Tmin" title="Link to this definition">¶</a></dt>
+<dd><p>The minimum temparature in the house K.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.Tmax">
+<span class="sig-name descname"><span class="pre">Tmax</span></span><a class="headerlink" href="#home_management.Model.Tmax" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum temparature in the house K.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.market">
+<span class="sig-name descname"><span class="pre">market</span></span><a class="headerlink" href="#home_management.Model.market" title="Link to this definition">¶</a></dt>
+<dd><p>The object containing electricity price evolution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.EV_energy_goal">
+<span class="sig-name descname"><span class="pre">EV_energy_goal</span></span><a class="headerlink" href="#home_management.Model.EV_energy_goal" title="Link to this definition">¶</a></dt>
+<dd><p>The amount of energy to fully charged car J.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.V">
+<span class="sig-name descname"><span class="pre">V</span></span><a class="headerlink" href="#home_management.Model.V" title="Link to this definition">¶</a></dt>
+<dd><p>The volume of the house m^3.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.P">
+<span class="sig-name descname"><span class="pre">P</span></span><a class="headerlink" href="#home_management.Model.P" title="Link to this definition">¶</a></dt>
+<dd><p>The pressure of the room kPa.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.max_power">
+<span class="sig-name descname"><span class="pre">max_power</span></span><a class="headerlink" href="#home_management.Model.max_power" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum usable power W.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.min_power">
+<span class="sig-name descname"><span class="pre">min_power</span></span><a class="headerlink" href="#home_management.Model.min_power" title="Link to this definition">¶</a></dt>
+<dd><p>The minimum usable power W.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.cv">
+<span class="sig-name descname"><span class="pre">cv</span></span><a class="headerlink" href="#home_management.Model.cv" title="Link to this definition">¶</a></dt>
+<dd><p>The heat capacity kJ/(kg.K).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.k">
+<span class="sig-name descname"><span class="pre">k</span></span><a class="headerlink" href="#home_management.Model.k" title="Link to this definition">¶</a></dt>
+<dd><p>The thermal conductivity W/(m·K).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.s">
+<span class="sig-name descname"><span class="pre">s</span></span><a class="headerlink" href="#home_management.Model.s" title="Link to this definition">¶</a></dt>
+<dd><p>The wall thickness m;</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.R">
+<span class="sig-name descname"><span class="pre">R</span></span><a class="headerlink" href="#home_management.Model.R" title="Link to this definition">¶</a></dt>
+<dd><p>The ideal gas constant kJ/(kg.K).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.T0">
+<span class="sig-name descname"><span class="pre">T0</span></span><a class="headerlink" href="#home_management.Model.T0" title="Link to this definition">¶</a></dt>
+<dd><p>The initial temperature K.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.T_outside">
+<span class="sig-name descname"><span class="pre">T_outside</span></span><a class="headerlink" href="#home_management.Model.T_outside" title="Link to this definition">¶</a></dt>
+<dd><p>The outside temperature K.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.power_t">
+<span class="sig-name descname"><span class="pre">power_t</span></span><a class="headerlink" href="#home_management.Model.power_t" title="Link to this definition">¶</a></dt>
+<dd><p>The power consumption for house temperature W.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.power_e">
+<span class="sig-name descname"><span class="pre">power_e</span></span><a class="headerlink" href="#home_management.Model.power_e" title="Link to this definition">¶</a></dt>
+<dd><p>The power consumption for EV charging W.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.power">
+<span class="sig-name descname"><span class="pre">power</span></span><a class="headerlink" href="#home_management.Model.power" title="Link to this definition">¶</a></dt>
+<dd><p>The total power consumption W.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.energy">
+<span class="sig-name descname"><span class="pre">energy</span></span><a class="headerlink" href="#home_management.Model.energy" title="Link to this definition">¶</a></dt>
+<dd><p>The electric vehicule energy J.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><a class="headerlink" href="#home_management.Model.temperature" title="Link to this definition">¶</a></dt>
+<dd><p>The house temperature K.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="home_management.Model.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><a class="headerlink" href="#home_management.Model.cost" title="Link to this definition">¶</a></dt>
+<dd><p>The total cost of the used energy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.day_tariff">
+<span class="sig-name descname"><span class="pre">day_tariff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/home_management.html#Model.day_tariff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.day_tariff" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a boolean refering to the electricity price of Economy 7.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> – An integer between 0 and N.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean that is true if an index refers to a valid time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.get_index">
+<span class="sig-name descname"><span class="pre">get_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/home_management.html#Model.get_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.get_index" title="Link to this definition">¶</a></dt>
+<dd><p>Find the closest index from datetime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> – A datetime object of the simulation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An intenger between 0 and N and that encodes the time.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – time must be between initial and departure time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.get_time">
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span></span></span><a class="reference internal" href="_modules/home_management.html#Model.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.get_time" title="Link to this definition">¶</a></dt>
+<dd><p>Return time given an index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> – An integer between 0 and N.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A datetime object that encodes the index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.optimization">
+<span class="sig-name descname"><span class="pre">optimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Model.optimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.optimization" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Model.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.plot" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.plot_separately">
+<span class="sig-name descname"><span class="pre">plot_separately</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Model.plot_separately"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.plot_separately" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="home_management.Model.plot_vertical">
+<span class="sig-name descname"><span class="pre">plot_vertical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/home_management.html#Model.plot_vertical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.Model.plot_vertical" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="home_management.tests">
+<span class="sig-prename descclassname"><span class="pre">home_management.</span></span><span class="sig-name descname"><span class="pre">tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#home_management.Model" title="home_management.Model"><span class="pre">Model</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/home_management.html#tests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.tests" title="Link to this definition">¶</a></dt>
+<dd><p>Test function of the class Model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – get_index({current_time}) != {index})</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="home_management.timer">
+<span class="sig-prename descclassname"><span class="pre">home_management.</span></span><span class="sig-name descname"><span class="pre">timer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/home_management.html#timer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#home_management.timer" title="Link to this definition">¶</a></dt>
+<dd><p>Define a decorator for time measurement of a function call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> – The function to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of a decorated function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">home_management module</a><ul>
+<li><a class="reference internal" href="#home_management.Market"><code class="docutils literal notranslate"><span class="pre">Market</span></code></a><ul>
+<li><a class="reference internal" href="#home_management.Market.prices"><code class="docutils literal notranslate"><span class="pre">Market.prices</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Market.dt"><code class="docutils literal notranslate"><span class="pre">Market.dt</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Market.N"><code class="docutils literal notranslate"><span class="pre">Market.N</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#home_management.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li><a class="reference internal" href="#home_management.Model.EV"><code class="docutils literal notranslate"><span class="pre">Model.EV</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.departure_time"><code class="docutils literal notranslate"><span class="pre">Model.departure_time</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.arrival_time"><code class="docutils literal notranslate"><span class="pre">Model.arrival_time</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.Tmin"><code class="docutils literal notranslate"><span class="pre">Model.Tmin</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.Tmax"><code class="docutils literal notranslate"><span class="pre">Model.Tmax</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.market"><code class="docutils literal notranslate"><span class="pre">Model.market</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.EV_energy_goal"><code class="docutils literal notranslate"><span class="pre">Model.EV_energy_goal</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.V"><code class="docutils literal notranslate"><span class="pre">Model.V</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.P"><code class="docutils literal notranslate"><span class="pre">Model.P</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.max_power"><code class="docutils literal notranslate"><span class="pre">Model.max_power</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.min_power"><code class="docutils literal notranslate"><span class="pre">Model.min_power</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.cv"><code class="docutils literal notranslate"><span class="pre">Model.cv</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.k"><code class="docutils literal notranslate"><span class="pre">Model.k</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.s"><code class="docutils literal notranslate"><span class="pre">Model.s</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.R"><code class="docutils literal notranslate"><span class="pre">Model.R</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.T0"><code class="docutils literal notranslate"><span class="pre">Model.T0</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.T_outside"><code class="docutils literal notranslate"><span class="pre">Model.T_outside</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.power_t"><code class="docutils literal notranslate"><span class="pre">Model.power_t</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.power_e"><code class="docutils literal notranslate"><span class="pre">Model.power_e</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.power"><code class="docutils literal notranslate"><span class="pre">Model.power</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.energy"><code class="docutils literal notranslate"><span class="pre">Model.energy</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.temperature"><code class="docutils literal notranslate"><span class="pre">Model.temperature</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.cost"><code class="docutils literal notranslate"><span class="pre">Model.cost</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.day_tariff"><code class="docutils literal notranslate"><span class="pre">Model.day_tariff()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.get_index"><code class="docutils literal notranslate"><span class="pre">Model.get_index()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.get_time"><code class="docutils literal notranslate"><span class="pre">Model.get_time()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.optimization"><code class="docutils literal notranslate"><span class="pre">Model.optimization()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.plot"><code class="docutils literal notranslate"><span class="pre">Model.plot()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.plot_separately"><code class="docutils literal notranslate"><span class="pre">Model.plot_separately()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.Model.plot_vertical"><code class="docutils literal notranslate"><span class="pre">Model.plot_vertical()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#home_management.tests"><code class="docutils literal notranslate"><span class="pre">tests()</span></code></a></li>
+<li><a class="reference internal" href="#home_management.timer"><code class="docutils literal notranslate"><span class="pre">timer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">scripts</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="react.html"
+                          title="next chapter">react module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/home_management.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="react.html" title="react module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="scripts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >scripts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">home_management module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, MICHELON.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>

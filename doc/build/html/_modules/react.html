@@ -1,0 +1,1102 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>react &#8212; LLM 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle.css?v=658d757c" />
+    
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">react</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for react</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span> <span class="n">StoppingCriteria</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">BitsAndBytesConfig</span><span class="p">,</span> <span class="n">TextStreamer</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randrange</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">home_management</span> <span class="kn">import</span> <span class="n">Market</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">tests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;import succesful&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/system_prompt.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">prompt</span><span class="p">:</span>
+    <span class="n">PROMPT</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/system2_prompt.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">prompt</span><span class="p">:</span>
+    <span class="n">PROMPT_NOREACT</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/format_prompt.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">format_prompt</span><span class="p">:</span>
+    <span class="n">FORMAT_PROMPT</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">format_prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">format_prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">ERROR_PROMPT</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;You made a mistake in your JSON blob.</span>
+<span class="s2">Here is the Python error message: $ERROR</span>
+
+<span class="s2">Remember, `action_input` must be a valid Python object (str, int, list, float).</span>
+<span class="s2">Try again with the right format and the right keys.&quot;&quot;&quot;</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">FORMATPROMPT</span><span class="o">=</span><span class="n">FORMAT_PROMPT</span><span class="p">)</span>
+
+<span class="n">ERROR_PROMPT</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">ERROR_PROMPT</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/example_user_1.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>
+          <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">example_user_1</span><span class="p">:</span>
+    <span class="n">EXAMPLE_USER_1</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">example_user_1</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/&#39;</span> <span class="o">+</span> <span class="n">EXAMPLE_USER_1</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">])</span> <span class="k">as</span> <span class="n">answer_user_1</span><span class="p">:</span>
+        <span class="n">EXAMPLE_USER_1</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">answer_user_1</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+        <span class="n">answer_user_1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">example_user_1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/example_user_1.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>
+          <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">example_user_1</span><span class="p">:</span>
+    <span class="n">EXAMPLE_USER_NOREACT</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">example_user_1</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/&#39;</span> <span class="o">+</span> <span class="s1">&#39;example_user_noreact.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">answer_user_1</span><span class="p">:</span>
+        <span class="n">EXAMPLE_USER_NOREACT</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">answer_user_1</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+        <span class="n">answer_user_1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">example_user_1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">messages_user</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">PROMPT</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">EXAMPLE_USER_1</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">EXAMPLE_USER_1</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;$TASK&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">messages_user_noreact</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">PROMPT_NOREACT</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;$TASK&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">messages_user_noreact_example</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">PROMPT_NOREACT</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">EXAMPLE_USER_NOREACT</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">EXAMPLE_USER_NOREACT</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;$TASK&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/init_user_prompt_easy.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_prompt</span><span class="p">:</span>
+    <span class="n">INIT_USER_PROMPT_EASY</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">user_prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/init_user_prompt_medium.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_prompt</span><span class="p">:</span>
+    <span class="n">INIT_USER_PROMPT_MEDIUM</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">user_prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;../data/init_user_prompt_hard.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_prompt</span><span class="p">:</span>
+    <span class="n">INIT_USER_PROMPT_HARD</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">user_prompt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">USER_PROMPT_EASY</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;|im_start|&gt;system</span><span class="si">{</span><span class="n">INIT_USER_PROMPT_EASY</span><span class="si">}</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;agent</span>
+<span class="s2">$QUERY</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;user&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">USER_PROMPT_MEDIUM</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;|im_start|&gt;system</span><span class="si">{</span><span class="n">INIT_USER_PROMPT_MEDIUM</span><span class="si">}</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;agent</span>
+<span class="s2">$QUERY</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;user&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">USER_PROMPT_HARD</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;|im_start|&gt;system</span><span class="si">{</span><span class="n">INIT_USER_PROMPT_HARD</span><span class="si">}</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;agent</span>
+<span class="s2">$QUERY</span>
+<span class="s2">&lt;|im_end|&gt;</span>
+<span class="s2">&lt;|im_start|&gt;user&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/tasks.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tasks_list</span><span class="p">:</span>
+    <span class="n">TASKS</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tasks_list</span><span class="p">)</span>
+    <span class="n">tasks_list</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;prompts loaded&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Tool">
+<a class="viewcode-back" href="../react.html#react.Tool">[docs]</a>
+<span class="k">class</span> <span class="nc">Tool</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A tool that is called by a React agent.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">      function: function to be called.</span>
+<span class="sd">      name: name of the function.</span>
+<span class="sd">      documentation: documentation of the function.</span>
+<span class="sd">      description: function description.</span>
+<span class="sd">      input: input description of the function.</span>
+<span class="sd">      output: output description of the function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate a Tool object for a React agent.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            function: function to be called.</span>
+<span class="sd">            name: name of the function.</span>
+<span class="sd">            documentation: documentation of the function.</span>
+<span class="sd">            description: function description.</span>
+<span class="sd">            input: input description of the function.</span>
+<span class="sd">            output: output description of the function.</span>
+<span class="sd">            nb_calls: number of function calls.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="n">index_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;Args:&#39;</span><span class="p">)</span>
+        <span class="n">index_returns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;Returns:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span><span class="p">[:</span><span class="n">index_args</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span><span class="p">[</span><span class="n">index_args</span><span class="o">+</span><span class="mi">7</span><span class="p">:</span><span class="n">index_returns</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation</span><span class="p">[</span><span class="n">index_returns</span><span class="o">+</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_calls</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print function description.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;action_description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s1">&#39;action_input&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
+            <span class="s1">&#39;action_output&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the function of the tool.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Toolkit">
+<a class="viewcode-back" href="../react.html#react.Toolkit">[docs]</a>
+<span class="k">class</span> <span class="nc">Toolkit</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of tools for a React agent.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tools: A list of tools.</span>
+<span class="sd">        names: A list of tools&#39; names.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tool</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">tools</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Toolkit.tools_description">
+<a class="viewcode-back" href="../react.html#react.Toolkit.tools_description">[docs]</a>
+    <span class="k">def</span> <span class="nf">tools_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span></div>
+
+
+
+<div class="viewcode-block" id="MyStoppingCriteria">
+<a class="viewcode-back" href="../react.html#react.MyStoppingCriteria">[docs]</a>
+<span class="k">class</span> <span class="nc">MyStoppingCriteria</span><span class="p">(</span><span class="n">StoppingCriteria</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom implementation of a stopping criteria.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        target_sequence: A string that mark the end of the model&#39;s generation.</span>
+<span class="sd">        prompt: A string given to a model.</span>
+<span class="sd">        last: The generated sequence.</span>
+<span class="sd">        new_token: Newly generated token.</span>
+<span class="sd">        tokenizer: The tokenizer assoicated to the LLM.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">target_sequence</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_sequence</span> <span class="o">=</span> <span class="n">target_sequence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_token</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Get the generated text as a string</span>
+        <span class="n">generated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">input_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_token</span> <span class="o">+=</span> <span class="n">generated_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># Check if the target sequence appears in the generated text</span>
+        <span class="k">for</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_sequence</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">sequence</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_token</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="kc">True</span>    <span class="c1"># Stop generation</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">generated_text</span>
+        <span class="k">return</span> <span class="kc">False</span>    <span class="c1"># Continue generation</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="Parser">
+<a class="viewcode-back" href="../react.html#react.Parser">[docs]</a>
+<span class="k">class</span> <span class="nc">Parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse tool calls inputs and outpus.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Parser.find_json">
+<a class="viewcode-back" href="../react.html#react.Parser.find_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find braces in React agent output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            response: The React agent output.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The React agent json as a string or an error message.&quot;&quot;&quot;</span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">end_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Braces not found or improperly placed.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Parser.call_function">
+<a class="viewcode-back" href="../react.html#react.Parser.call_function">[docs]</a>
+    <span class="k">def</span> <span class="nf">call_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">arguments</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+                      <span class="n">toolkit</span><span class="p">:</span> <span class="n">Toolkit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call a function with arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name of the function</span>
+<span class="sd">            arguments: Arguments of the function</span>
+<span class="sd">            toolkit: List of tools</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The result of the function or an error message&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">function_to_call</span> <span class="o">=</span> <span class="n">toolkit</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">function_to_call</span><span class="o">.</span><span class="n">nb_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">arguments</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">function_to_call</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">function_to_call</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Parser.process">
+<a class="viewcode-back" href="../react.html#react.Parser.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">toolkit</span><span class="p">:</span> <span class="n">Toolkit</span><span class="p">,</span>
+                <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse an React agent output and call function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            response: The React agent output.</span>
+<span class="sd">            toolkit: List of tools of the React agent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The result of the function or an error message&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_json</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span>
+                            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;action_input&#39;</span><span class="p">],</span>
+                            <span class="n">toolkit</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">error</span> <span class="o">=</span> <span class="n">ERROR_PROMPT</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+                            <span class="n">ERROR</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                        <span class="k">return</span> <span class="n">error</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">ERROR_PROMPT</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+                        <span class="n">ERROR</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">error</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ERROR_PROMPT</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">ERROR</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="React">
+<a class="viewcode-back" href="../react.html#react.React">[docs]</a>
+<span class="k">class</span> <span class="nc">React</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;React agent that solves tasks for an Energy Management System</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">      model: A llm model</span>
+<span class="sd">      tokenizer: A tokenizer associated to a model</span>
+<span class="sd">      toolkit: A list of tools for the agent</span>
+<span class="sd">      parser: A parser that will parse Llm&#39;s tool call</span>
+<span class="sd">      system_prompt: Initial React prompt</span>
+<span class="sd">      streamer: Streamer object indication streaming option for the llm</span>
+<span class="sd">      prompt: Current prompt value&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model</span><span class="p">:</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+                 <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">,</span>
+                 <span class="n">toolkit</span><span class="p">:</span> <span class="n">Toolkit</span><span class="p">,</span>
+                 <span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span>
+                 <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">react</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;react&quot;</span>
+                 <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolkit</span> <span class="o">=</span> <span class="n">toolkit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">parser</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">react</span> <span class="o">=</span> <span class="n">react</span>
+
+<div class="viewcode-block" id="React.init_prompt">
+<a class="viewcode-back" href="../react.html#react.React.init_prompt">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize prompt.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task: the task given to the React agent</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The initialized prompt&quot;&quot;&quot;</span>
+        <span class="n">tools_description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolkit</span><span class="o">.</span><span class="n">tools_description</span><span class="p">()</span>
+        <span class="n">tools_list</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toolkit</span><span class="p">)</span>
+        <span class="n">init_prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+            <span class="n">TASK</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">TOOLS_DESCRIPTION</span><span class="o">=</span><span class="n">tools_description</span><span class="p">,</span>
+            <span class="n">TOOLS_LIST</span><span class="o">=</span><span class="n">tools_list</span><span class="p">,</span>
+            <span class="n">FORMAT_PROMPT</span><span class="o">=</span><span class="n">FORMAT_PROMPT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_prompt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_prompt</span></div>
+
+
+<div class="viewcode-block" id="React.done">
+<a class="viewcode-back" href="../react.html#react.React.done">[docs]</a>
+    <span class="k">def</span> <span class="nf">done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the task is done.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prompt: The LLM generated prompt to a task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True or False if the task is done or not.&quot;&quot;&quot;</span>
+        <span class="n">end_texts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;final&#39;</span><span class="p">,</span> <span class="s1">&#39;answer&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">end_texts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">prompt</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="React.get_result">
+<a class="viewcode-back" href="../react.html#react.React.get_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the llm result to a task.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result_index</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="s1">&#39;final answer:&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;task&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+                    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">[</span><span class="n">result_index</span><span class="o">+</span><span class="mi">13</span><span class="p">:</span><span class="o">-</span><span class="mi">10</span><span class="p">],</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;task&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+                    <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="s1">&#39;No final answer&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a reprensation of the React agent.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">repr_index</span><span class="p">:]</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply React method to solve a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task: Task description</span>
+<span class="sd">            n_iter: Maximum number of iteration for the React agent</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dict with the agent&#39;s results&quot;&quot;&quot;</span>
+        <span class="c1"># add clean prompt option so that it is not too long TODO create func</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_prompt</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span> <span class="ow">and</span> <span class="nb">iter</span> <span class="o">&lt;</span> <span class="n">n_iter</span><span class="p">:</span>
+            <span class="n">encoded_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span>
+                                           <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                           <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">encoded_input</span><span class="p">[</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">stopcriteria</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;Observation:&quot;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s2">&quot;Final Answer:.*\.&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;&lt;|im_end|&gt;&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">react</span> <span class="o">!=</span> <span class="s2">&quot;react&quot;</span><span class="p">:</span>
+                <span class="n">stopcriteria</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\}&quot;</span><span class="p">)</span>
+            <span class="n">streamer</span> <span class="o">=</span> <span class="n">TextStreamer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">skip_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">generated_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">input_ids</span><span class="p">,</span>
+                <span class="n">pad_token_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token_id</span><span class="p">,</span>
+                <span class="n">do_sample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">750</span><span class="p">,</span>
+                <span class="n">repetition_penalty</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+                <span class="n">streamer</span><span class="o">=</span><span class="n">streamer</span><span class="p">,</span>
+                <span class="n">stopping_criteria</span><span class="o">=</span><span class="n">MyStoppingCriteria</span><span class="p">(</span><span class="n">stopcriteria</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">))</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+                <span class="n">generated_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:],</span>
+                <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">clean_up_tokenization_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">done</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="nb">iter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">response</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">done</span><span class="p">])</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> \
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolkit</span><span class="p">,</span> <span class="n">done</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s2">&quot;ask_user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Thought: &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="ow">not</span> <span class="n">done</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">+=</span> <span class="n">response</span> <span class="o">+</span> <span class="n">output</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Thought: &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="ow">not</span> <span class="n">done</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="User">
+<a class="viewcode-back" href="../react.html#react.User">[docs]</a>
+<span class="k">class</span> <span class="nc">User</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines a user with random settings.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        model: An LLM used as a user</span>
+<span class="sd">        tokenizer: A tokenizer adapted the model</span>
+<span class="sd">        initprompt: The input prompt given to the LLM</span>
+<span class="sd">        path: Optional path to store user&#39;s parameters</span>
+<span class="sd">        mode: difficulty level (easy, medium, hard) or real mode&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+                 <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">,</span>
+                 <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">city</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;London&#39;</span><span class="p">,</span> <span class="s1">&#39;Manchester&#39;</span><span class="p">,</span> <span class="s1">&#39;Oxford&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="s2">&quot;%H&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">DATE_MIN</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;01/01/2020&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+        <span class="n">DATE_MAX</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;01/01/2021&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_start</span> <span class="o">=</span> <span class="n">random_date</span><span class="p">(</span><span class="n">DATE_MIN</span><span class="p">,</span> <span class="n">DATE_MAX</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_start</span> <span class="o">+</span> \
+            <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># json solution file</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;real&#39;</span><span class="p">:</span>
+            <span class="n">solution</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;date_start&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start</span><span class="p">),</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;date_end&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_end</span><span class="p">),</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;EV&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;city&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">city</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;departure_time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;arrival_time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span><span class="p">),</span> <span class="s2">&quot;%H&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;Tmin&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;Tmax&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;weather_forecast&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;prices&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]}</span>
+            <span class="p">}</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">foutput</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="n">foutput</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                <span class="n">foutput</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;easy&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span> <span class="o">=</span> <span class="n">USER_PROMPT_EASY</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+                <span class="n">CITY</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">city</span><span class="p">,</span>
+                <span class="n">EV</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ev</span><span class="p">,</span>
+                <span class="n">TMIN</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="p">,</span>
+                <span class="n">TMAX</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="p">,</span>
+                <span class="n">ARRIVAL_TIME</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span><span class="p">),</span> <span class="s2">&quot;%H&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="n">LEAVING_TIME</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span><span class="p">,</span>
+                <span class="n">DATE1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="n">DATE2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span> <span class="o">=</span> <span class="n">USER_PROMPT_MEDIUM</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+                <span class="n">CITY</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">city</span><span class="p">,</span>
+                <span class="n">EV</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ev</span><span class="p">,</span>
+                <span class="n">TMIN</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="p">,</span>
+                <span class="n">TMAX</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="p">,</span>
+                <span class="n">ARRIVAL_TIME</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span><span class="p">),</span> <span class="s2">&quot;%H&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="n">LEAVING_TIME</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span><span class="p">,</span>
+                <span class="n">DATE1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">),</span>
+                <span class="n">DATE2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;hard&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span> <span class="o">=</span> <span class="n">USER_PROMPT_HARD</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span>
+                <span class="n">CITY</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">city</span><span class="p">,</span>
+                <span class="n">EV</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ev</span><span class="p">,</span>
+                <span class="n">TMIN</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="p">,</span>
+                <span class="n">TMAX</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="p">,</span>
+                <span class="n">ARRIVAL_TIME</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">-</span> <span class="mi">12</span><span class="p">),</span> <span class="s2">&quot;%H&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+                <span class="n">LEAVING_TIME</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span><span class="p">,</span>
+                <span class="n">DATE1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">),</span>
+                <span class="n">DATE2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_end</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ev</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">city</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaving_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arrival_time</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TASKS</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+            <span class="n">TASKS</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a reprensation of the user.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span><span class="p">)</span> <span class="o">==</span> <span class="n">Template</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">QUERY</span><span class="o">=</span><span class="s2">&quot;$QUERY&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate an answer to a question about home management settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: The question asked to the user</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The generated answer&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;real&#39;</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initprompt</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">QUERY</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">encoded_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">encoded_input</span><span class="p">[</span><span class="s1">&#39;input_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;hard&quot;</span><span class="p">:</span>
+                <span class="n">stoppingcriteria</span> <span class="o">=</span> <span class="n">MyStoppingCriteria</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;&lt;&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stoppingcriteria</span> <span class="o">=</span> <span class="n">MyStoppingCriteria</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;[.]\.&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">)</span>
+            <span class="n">generated_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">input_ids</span><span class="p">,</span>
+                <span class="n">pad_token_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token_id</span><span class="p">,</span>
+                <span class="n">do_sample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                <span class="n">repetition_penalty</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+                <span class="n">stopping_criteria</span><span class="o">=</span><span class="n">stoppingcriteria</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+                <span class="n">generated_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:],</span>
+                <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">clean_up_tokenization_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">clean</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">clean</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="clean">
+<a class="viewcode-back" href="../react.html#react.clean">[docs]</a>
+<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># cleaning of llm output</span>
+    <span class="n">symbols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;|im_end|&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_start|&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_end&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_en&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_e&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_start&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;&lt;|im_star&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_sta&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_st&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;|im_s&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;im_&#39;</span><span class="p">,</span> <span class="s1">&#39;im_end&#39;</span><span class="p">,</span> <span class="s1">&#39;end&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">im&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prompt</span></div>
+
+
+
+<div class="viewcode-block" id="random_date">
+<a class="viewcode-back" href="../react.html#react.random_date">[docs]</a>
+<span class="k">def</span> <span class="nf">random_date</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function will return a random datetime between two datetime</span>
+<span class="sd">    objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        start: The minimum date</span>
+<span class="sd">        end: The maximum date</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A random date between start and end&quot;&quot;&quot;</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="n">int_delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="o">+</span> <span class="n">delta</span><span class="o">.</span><span class="n">seconds</span>
+    <span class="n">random_second</span> <span class="o">=</span> <span class="n">randrange</span><span class="p">(</span><span class="n">int_delta</span><span class="p">)</span>
+    <span class="n">random_date</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">random_second</span><span class="p">)</span>
+    <span class="n">random_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">random_date</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">random_date</span></div>
+
+
+
+<div class="viewcode-block" id="init_user_tool">
+<a class="viewcode-back" href="../react.html#react.init_user_tool">[docs]</a>
+<span class="k">def</span> <span class="nf">init_user_tool</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+                   <span class="n">user_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate a ask user function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        user: A user that answers questions</span>
+<span class="sd">        user_mode: difficulty level (easy, medium or hard)</span>
+<span class="sd">        i: refers to the parameters to retrieve</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A user interaction function&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">ask_user</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the user&#39;s answer to a query</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            query: A question to a user</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The user&#39;s answer&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">user</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ask_user</span></div>
+
+
+
+<div class="viewcode-block" id="init_storing_tool">
+<a class="viewcode-back" href="../react.html#react.init_storing_tool">[docs]</a>
+<span class="k">def</span> <span class="nf">init_storing_tool</span><span class="p">(</span><span class="n">argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Intialize a storing function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        argument: The argument that will be stored</span>
+<span class="sd">        args: The dict where the values will be stored</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A storing function&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store a value by assigning it to an argument</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: The value to store.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A validation message&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="n">argument</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="n">argument</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">args</span><span class="p">[</span><span class="n">argument</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">try_parsing_date</span><span class="p">(</span>
+                            <span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">argument</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">args</span><span class="p">[</span><span class="n">argument</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">try_parsing_time</span><span class="p">(</span>
+                            <span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">args</span><span class="p">[</span><span class="n">argument</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">return</span> <span class="s2">&quot;The value was correctly assigned. The task is done&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">ERROR_PROMPT</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">ERROR</span><span class="o">=</span><span class="n">error</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">argument</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Value type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not correct.</span>
+<span class="s2">            You must pass a value of type </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">store</span></div>
+
+
+
+<div class="viewcode-block" id="try_parsing_date">
+<a class="viewcode-back" href="../react.html#react.try_parsing_date">[docs]</a>
+<span class="k">def</span> <span class="nf">try_parsing_date</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse str to datetime.</span>
+
+<span class="sd">    str must be of those formats: %d/%m/%y, %d/%m/%Y, %d-%m-%Y, %Y-%m-%d</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError if string does not correspond to the specified formats.&quot;&quot;&quot;</span>
+    <span class="n">formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%y&quot;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%m-%Y&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;%y/%m/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">formats</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The value must have this format dd/mm/yyyy.</span>
+<span class="sd">        Only use digits for the date. Try again.&quot;&quot;&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="try_parsing_time">
+<a class="viewcode-back" href="../react.html#react.try_parsing_time">[docs]</a>
+<span class="k">def</span> <span class="nf">try_parsing_time</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse str to time.</span>
+
+<span class="sd">    str must be in this format: %d/%m/%y</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError if string does not correspond to the specified formats.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">,</span> <span class="s2">&quot;%Hh%M&quot;</span><span class="p">,</span> <span class="s2">&quot;%H&quot;</span><span class="p">,</span> <span class="s2">&quot;%H %M&quot;</span><span class="p">,</span> <span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The value must have this format HH:MM.</span>
+<span class="sd">        Only use digits for the time. Try again.&quot;&quot;&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_complete">
+<a class="viewcode-back" href="../react.html#react.is_complete">[docs]</a>
+<span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the all energy management parameters have been retrieved.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        index: A tuple of integer that filter only the arguments to check.</span>
+<span class="sd">        args: The dict containing the parameters (or not)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        If the parameters are all retrieved and the list of missing keys&quot;&quot;&quot;</span>
+    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">done</span><span class="p">,</span> <span class="n">missing_keys</span></div>
+
+
+
+<div class="viewcode-block" id="find_user_parameters">
+<a class="viewcode-back" href="../react.html#react.find_user_parameters">[docs]</a>
+<span class="k">def</span> <span class="nf">find_user_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+                         <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">,</span>
+                         <span class="n">args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+                         <span class="n">args_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                         <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+                         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                         <span class="n">user_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                         <span class="n">task_index</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+                         <span class="n">react</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;react&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve random user&#39;s settings.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: An LLM used as an agent and as a user</span>
+<span class="sd">        tokenizer: A tokenizer adapted the model</span>
+<span class="sd">        args: A dict that will stores the user&#39;s parameters</span>
+<span class="sd">        args_lists: List of parameters to find</span>
+<span class="sd">        path: Where to store the parameters of the user for testing</span>
+<span class="sd">        verbose: If True the function will print the agent&#39;s thinking</span>
+<span class="sd">        usr_mode: difficulty level (easy, medium or hard)</span>
+<span class="sd">        task_index: Tasks index to solve</span>
+<span class="sd">        react: Implement ReAct or Act</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The settings, the duration of the call and the number of iterations&quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">done</span><span class="p">,</span> <span class="n">arguments</span> <span class="o">=</span> <span class="n">is_complete</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">user_mode</span><span class="p">)</span>
+    <span class="n">nb_calls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">args_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">TASKS</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">task_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])][</span><span class="s1">&#39;task&#39;</span><span class="p">]</span>
+        <span class="n">argument</span> <span class="o">=</span> <span class="n">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">storing_tool</span> <span class="o">=</span> <span class="n">Tool</span><span class="p">(</span><span class="n">init_storing_tool</span><span class="p">(</span><span class="n">argument</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+        <span class="n">user_tool</span> <span class="o">=</span> <span class="n">Tool</span><span class="p">(</span><span class="n">init_user_tool</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">user_mode</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+        <span class="n">toolkit</span> <span class="o">=</span> <span class="n">Toolkit</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">user_tool</span><span class="p">,</span> <span class="n">storing_tool</span><span class="p">])</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">react</span> <span class="o">==</span> <span class="s2">&quot;react&quot;</span><span class="p">:</span>
+            <span class="n">SYSTEM_PROMPT</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
+                <span class="n">messages_user</span><span class="p">,</span> <span class="n">tokenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">react</span> <span class="o">==</span> <span class="s2">&quot;noreact_example&quot;</span><span class="p">:</span>
+            <span class="n">SYSTEM_PROMPT</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
+                <span class="n">messages_user_noreact_example</span><span class="p">,</span> <span class="n">tokenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">SYSTEM_PROMPT</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
+                <span class="n">messages_user_noreact</span><span class="p">,</span> <span class="n">tokenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">agent</span> <span class="o">=</span> <span class="n">React</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">toolkit</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span>
+                      <span class="n">prompt</span><span class="o">=</span><span class="n">SYSTEM_PROMPT</span><span class="p">,</span> <span class="n">react</span><span class="o">=</span><span class="n">react</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">nb_calls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_tool</span><span class="o">.</span><span class="n">nb_calls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ITERATION </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="se">\n</span><span class="s2">PROMPT</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">done</span><span class="p">,</span> <span class="n">arguments</span> <span class="o">=</span> <span class="n">is_complete</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nb_calls</span></div>
+
+
+
+<div class="viewcode-block" id="management_system">
+<a class="viewcode-back" href="../react.html#react.management_system">[docs]</a>
+<span class="k">def</span> <span class="nf">management_system</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+                      <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">,</span>
+                      <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;easy&quot;</span><span class="p">,</span>
+                      <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span><span class="p">,</span>
+                      <span class="n">test</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="n">task_index</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve random user&#39;s settings and find the optimal consumption.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: An LLM used as an agent and as a user</span>
+<span class="sd">        tokenizer: A tokenizer adapted the model</span>
+<span class="sd">        mode: User difficulty level or real mode</span>
+<span class="sd">        path: Path to store solution and output args</span>
+<span class="sd">        test: Boolean for function testing without parameter retrieval</span>
+<span class="sd">        verbose: Print or not Prompt&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/arguments.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">arguments</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+        <span class="n">args_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
+            <span class="n">task_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">task_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">}</span>
+        <span class="n">arguments</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">path_sol</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;solution.json&quot;</span>
+    <span class="n">path_output</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;output.json&quot;</span>
+    <span class="n">user_params</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">nb_calls</span> <span class="o">=</span> <span class="n">find_user_parameters</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">,</span>
+        <span class="n">args_list</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">path_sol</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="n">user_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">task_index</span><span class="o">=</span><span class="n">task_index</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/arguments.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">arguments</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+        <span class="n">arguments</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">user_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="n">user_params</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">user_params</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
+    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+        <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+        <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;iteration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">iter</span>
+    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">duration</span>
+    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;calls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_calls</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">foutput</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">user_params</span><span class="p">,</span> <span class="n">foutput</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">foutput</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">test</span> <span class="ow">or</span> <span class="n">success</span><span class="p">(</span><span class="n">path_sol</span><span class="p">,</span> <span class="n">path_output</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">date_end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+            <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="n">date_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+            <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+
+        <span class="n">market_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="s1">&#39;../data/&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dno&#39;</span><span class="p">:</span> <span class="s1">&#39;EDF&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">date_end</span> <span class="o">-</span> <span class="n">date_start</span><span class="p">)</span><span class="o">.</span><span class="n">days</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="p">}</span>
+        <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="o">**</span><span class="n">market_kwargs</span><span class="p">)</span>
+        <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="s1">&#39;../data/&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;EV&#39;</span><span class="p">:</span> <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;EV&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;date_start&#39;</span><span class="p">:</span> <span class="n">date_start</span><span class="p">,</span>
+            <span class="s1">&#39;date_end&#39;</span><span class="p">:</span> <span class="n">date_end</span><span class="p">,</span>
+            <span class="s1">&#39;departure_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;departure_time&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="s1">&#39;arrival_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;arrival_time&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="s1">&#39;Tmin&#39;</span><span class="p">:</span> <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;Tmin&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;Tmax&#39;</span><span class="p">:</span> <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;Tmax&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;market&#39;</span><span class="p">:</span> <span class="n">market</span><span class="p">,</span>
+            <span class="s1">&#39;plot_path&#39;</span><span class="p">:</span> <span class="s2">&quot;./LLM/img/optim&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="n">tests</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">optimization</span><span class="p">()</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;The retrieved values are not correct&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="success">
+<a class="viewcode-back" href="../react.html#react.success">[docs]</a>
+<span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="n">path1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test if two json file are equal</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path1: A path to a json file</span>
+<span class="sd">        path2: A path to a json file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Number of common values&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path1</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file1</span><span class="p">:</span>
+            <span class="n">dict1</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file1</span><span class="p">)</span>
+            <span class="n">file1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;file not found at path </span><span class="si">{</span><span class="n">path1</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path2</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file2</span><span class="p">:</span>
+            <span class="n">dict2</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file2</span><span class="p">)</span>
+            <span class="n">file2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;file not found at path </span><span class="si">{</span><span class="n">path2</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dict2</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">dict1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">dict2</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]:</span>
+                <span class="n">s</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">s</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_retriever">
+<a class="viewcode-back" href="../react.html#react.test_user_retriever">[docs]</a>
+<span class="k">def</span> <span class="nf">test_user_retriever</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span>
+                        <span class="n">tokenizer</span><span class="p">:</span> <span class="n">AutoTokenizer</span><span class="p">,</span>
+                        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./LLM/test/&quot;</span><span class="p">,</span>
+                        <span class="n">task_index</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+                        <span class="n">react</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;react&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test user retriever methods.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: An LLM used as an agent and as a user</span>
+<span class="sd">        tokenizer: A tokenizer adapted the model</span>
+<span class="sd">        n: Number of tests for the given specification</span>
+<span class="sd">        mode: Tast difficulty (easy, medium or hard)</span>
+<span class="sd">        path: Where to save test outputs (solution and answers)</span>
+<span class="sd">        task_index: Tasks index to solve</span>
+<span class="sd">        react: Implement ReAct or Act&quot;&quot;&quot;</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;../data/arguments.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">arguments</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+            <span class="n">args_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
+                <span class="n">task_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">task_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">}</span>
+            <span class="n">arguments</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">path_sol</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;solution_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="n">user_params</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">nb_calls</span> <span class="o">=</span> <span class="n">find_user_parameters</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">args_list</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path_sol</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">user_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">task_index</span><span class="o">=</span><span class="n">task_index</span><span class="p">,</span>
+            <span class="n">react</span><span class="o">=</span><span class="n">react</span><span class="p">)</span>
+        <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;iteration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">iter</span>
+        <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;calls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_calls</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\n</span><span class="s2">TEST </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> TIME </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="si">}</span><span class="s2">s ITER </span><span class="si">{</span><span class="nb">iter</span><span class="si">}</span>
+<span class="s2">            PARAMETERS </span><span class="si">{</span><span class="n">user_params</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">path_output</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;output_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">foutput</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;date_start&#39;</span> <span class="ow">in</span> <span class="n">user_params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;date_end&#39;</span> <span class="ow">in</span> <span class="n">user_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_start&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+                <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">user_params</span><span class="p">[</span><span class="s1">&#39;date_end&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">user_params</span><span class="p">,</span> <span class="n">foutput</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">foutput</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))))</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">react</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, MICHELON.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>

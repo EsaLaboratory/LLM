@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>react module &#8212; LLM 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css?v=658d757c" />
+    
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="home_management module" href="home_management.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="home_management.html" title="home_management module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">scripts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">react module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-react">
+<span id="react-module"></span><h1>react module<a class="headerlink" href="#module-react" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">MyStoppingCriteria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_sequence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#MyStoppingCriteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.MyStoppingCriteria" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">StoppingCriteria</span></code></p>
+<p>Custom implementation of a stopping criteria.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria.target_sequence">
+<span class="sig-name descname"><span class="pre">target_sequence</span></span><a class="headerlink" href="#react.MyStoppingCriteria.target_sequence" title="Link to this definition">¶</a></dt>
+<dd><p>A string that mark the end of the model’s generation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria.prompt">
+<span class="sig-name descname"><span class="pre">prompt</span></span><a class="headerlink" href="#react.MyStoppingCriteria.prompt" title="Link to this definition">¶</a></dt>
+<dd><p>A string given to a model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria.last">
+<span class="sig-name descname"><span class="pre">last</span></span><a class="headerlink" href="#react.MyStoppingCriteria.last" title="Link to this definition">¶</a></dt>
+<dd><p>The generated sequence.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria.new_token">
+<span class="sig-name descname"><span class="pre">new_token</span></span><a class="headerlink" href="#react.MyStoppingCriteria.new_token" title="Link to this definition">¶</a></dt>
+<dd><p>Newly generated token.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.MyStoppingCriteria.tokenizer">
+<span class="sig-name descname"><span class="pre">tokenizer</span></span><a class="headerlink" href="#react.MyStoppingCriteria.tokenizer" title="Link to this definition">¶</a></dt>
+<dd><p>The tokenizer assoicated to the LLM.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="react.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><a class="reference internal" href="_modules/react.html#Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Parser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parse tool calls inputs and outpus.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="react.Parser.call_function">
+<span class="sig-name descname"><span class="pre">call_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolkit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#react.Toolkit" title="react.Toolkit"><span class="pre">Toolkit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></span><a class="reference internal" href="_modules/react.html#Parser.call_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Parser.call_function" title="Link to this definition">¶</a></dt>
+<dd><p>Call a function with arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the function</p></li>
+<li><p><strong>arguments</strong> – Arguments of the function</p></li>
+<li><p><strong>toolkit</strong> – List of tools</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the function or an error message</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.Parser.find_json">
+<span class="sig-name descname"><span class="pre">find_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/react.html#Parser.find_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Parser.find_json" title="Link to this definition">¶</a></dt>
+<dd><p>Find braces in React agent output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>response</strong> – The React agent output.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The React agent json as a string or an error message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.Parser.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolkit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#react.Toolkit" title="react.Toolkit"><span class="pre">Toolkit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></span><a class="reference internal" href="_modules/react.html#Parser.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Parser.process" title="Link to this definition">¶</a></dt>
+<dd><p>Parse an React agent output and call function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> – The React agent output.</p></li>
+<li><p><strong>toolkit</strong> – List of tools of the React agent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the function or an error message</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="react.React">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">React</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoModelForCausalLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolkit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#react.Toolkit" title="react.Toolkit"><span class="pre">Toolkit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#react.Parser" title="react.Parser"><span class="pre">Parser</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'react'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#React"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.React" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>React agent that solves tasks for an Energy Management System</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#react.React.model" title="Link to this definition">¶</a></dt>
+<dd><p>A llm model</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.tokenizer">
+<span class="sig-name descname"><span class="pre">tokenizer</span></span><a class="headerlink" href="#react.React.tokenizer" title="Link to this definition">¶</a></dt>
+<dd><p>A tokenizer associated to a model</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.toolkit">
+<span class="sig-name descname"><span class="pre">toolkit</span></span><a class="headerlink" href="#react.React.toolkit" title="Link to this definition">¶</a></dt>
+<dd><p>A list of tools for the agent</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.parser">
+<span class="sig-name descname"><span class="pre">parser</span></span><a class="headerlink" href="#react.React.parser" title="Link to this definition">¶</a></dt>
+<dd><p>A parser that will parse Llm’s tool call</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.system_prompt">
+<span class="sig-name descname"><span class="pre">system_prompt</span></span><a class="headerlink" href="#react.React.system_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Initial React prompt</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.streamer">
+<span class="sig-name descname"><span class="pre">streamer</span></span><a class="headerlink" href="#react.React.streamer" title="Link to this definition">¶</a></dt>
+<dd><p>Streamer object indication streaming option for the llm</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.React.prompt">
+<span class="sig-name descname"><span class="pre">prompt</span></span><a class="headerlink" href="#react.React.prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Current prompt value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.React.done">
+<span class="sig-name descname"><span class="pre">done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/react.html#React.done"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.React.done" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the task is done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prompt</strong> – The LLM generated prompt to a task.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True or False if the task is done or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.React.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/react.html#React.get_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.React.get_result" title="Link to this definition">¶</a></dt>
+<dd><p>Return the llm result to a task.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.React.init_prompt">
+<span class="sig-name descname"><span class="pre">init_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/react.html#React.init_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.React.init_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize prompt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task</strong> – the task given to the React agent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The initialized prompt</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="react.Tool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">Tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#Tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Tool" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A tool that is called by a React agent.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.function">
+<span class="sig-name descname"><span class="pre">function</span></span><a class="headerlink" href="#react.Tool.function" title="Link to this definition">¶</a></dt>
+<dd><p>function to be called.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#react.Tool.name" title="Link to this definition">¶</a></dt>
+<dd><p>name of the function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.documentation">
+<span class="sig-name descname"><span class="pre">documentation</span></span><a class="headerlink" href="#react.Tool.documentation" title="Link to this definition">¶</a></dt>
+<dd><p>documentation of the function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#react.Tool.description" title="Link to this definition">¶</a></dt>
+<dd><p>function description.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.input">
+<span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#react.Tool.input" title="Link to this definition">¶</a></dt>
+<dd><p>input description of the function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Tool.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#react.Tool.output" title="Link to this definition">¶</a></dt>
+<dd><p>output description of the function.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="react.Toolkit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">Toolkit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#react.Tool" title="react.Tool"><span class="pre">Tool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#Toolkit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Toolkit" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>List of tools for a React agent.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Toolkit.tools">
+<span class="sig-name descname"><span class="pre">tools</span></span><a class="headerlink" href="#react.Toolkit.tools" title="Link to this definition">¶</a></dt>
+<dd><p>A list of tools.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.Toolkit.names">
+<span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#react.Toolkit.names" title="Link to this definition">¶</a></dt>
+<dd><p>A list of tools’ names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="react.Toolkit.tools_description">
+<span class="sig-name descname"><span class="pre">tools_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#Toolkit.tools_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.Toolkit.tools_description" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="react.User">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoModelForCausalLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'medium'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#User"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.User" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines a user with random settings.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.User.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#react.User.model" title="Link to this definition">¶</a></dt>
+<dd><p>An LLM used as a user</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.User.tokenizer">
+<span class="sig-name descname"><span class="pre">tokenizer</span></span><a class="headerlink" href="#react.User.tokenizer" title="Link to this definition">¶</a></dt>
+<dd><p>A tokenizer adapted the model</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.User.initprompt">
+<span class="sig-name descname"><span class="pre">initprompt</span></span><a class="headerlink" href="#react.User.initprompt" title="Link to this definition">¶</a></dt>
+<dd><p>The input prompt given to the LLM</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.User.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#react.User.path" title="Link to this definition">¶</a></dt>
+<dd><p>Optional path to store user’s parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="react.User.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#react.User.mode" title="Link to this definition">¶</a></dt>
+<dd><p>difficulty level (easy, medium, hard) or real mode</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.clean">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/react.html#clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.clean" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.find_user_parameters">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">find_user_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoModelForCausalLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'medium'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">-2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'react'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/react.html#find_user_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.find_user_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve random user’s settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – An LLM used as an agent and as a user</p></li>
+<li><p><strong>tokenizer</strong> – A tokenizer adapted the model</p></li>
+<li><p><strong>args</strong> – A dict that will stores the user’s parameters</p></li>
+<li><p><strong>args_lists</strong> – List of parameters to find</p></li>
+<li><p><strong>path</strong> – Where to store the parameters of the user for testing</p></li>
+<li><p><strong>verbose</strong> – If True the function will print the agent’s thinking</p></li>
+<li><p><strong>usr_mode</strong> – difficulty level (easy, medium or hard)</p></li>
+<li><p><strong>task_index</strong> – Tasks index to solve</p></li>
+<li><p><strong>react</strong> – Implement ReAct or Act</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The settings, the duration of the call and the number of iterations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.init_storing_tool">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">init_storing_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argument</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/react.html#init_storing_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.init_storing_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Intialize a storing function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argument</strong> – The argument that will be stored</p></li>
+<li><p><strong>args</strong> – The dict where the values will be stored</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A storing function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.init_user_tool">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">init_user_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#react.User" title="react.User"><span class="pre">User</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/react.html#init_user_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.init_user_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Instantiate a ask user function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> – A user that answers questions</p></li>
+<li><p><strong>user_mode</strong> – difficulty level (easy, medium or hard)</p></li>
+<li><p><strong>i</strong> – refers to the parameters to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A user interaction function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.is_complete">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">is_complete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/react.html#is_complete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.is_complete" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the all energy management parameters have been retrieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> – A tuple of integer that filter only the arguments to check.</p></li>
+<li><p><strong>args</strong> – The dict containing the parameters (or not)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If the parameters are all retrieved and the list of missing keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.management_system">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">management_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoModelForCausalLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'easy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">-2)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/react.html#management_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.management_system" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve random user’s settings and find the optimal consumption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – An LLM used as an agent and as a user</p></li>
+<li><p><strong>tokenizer</strong> – A tokenizer adapted the model</p></li>
+<li><p><strong>mode</strong> – User difficulty level or real mode</p></li>
+<li><p><strong>path</strong> – Path to store solution and output args</p></li>
+<li><p><strong>test</strong> – Boolean for function testing without parameter retrieval</p></li>
+<li><p><strong>verbose</strong> – Print or not Prompt</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.random_date">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">random_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span></span></span><a class="reference internal" href="_modules/react.html#random_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.random_date" title="Link to this definition">¶</a></dt>
+<dd><p>This function will return a random datetime between two datetime
+objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – The minimum date</p></li>
+<li><p><strong>end</strong> – The maximum date</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A random date between start and end</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.success">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/react.html#success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.success" title="Link to this definition">¶</a></dt>
+<dd><p>Test if two json file are equal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path1</strong> – A path to a json file</p></li>
+<li><p><strong>path2</strong> – A path to a json file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of common values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.test_user_retriever">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">test_user_retriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoModelForCausalLM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AutoTokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'medium'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./LLM/test/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">-2)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'react'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/react.html#test_user_retriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.test_user_retriever" title="Link to this definition">¶</a></dt>
+<dd><p>Test user retriever methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – An LLM used as an agent and as a user</p></li>
+<li><p><strong>tokenizer</strong> – A tokenizer adapted the model</p></li>
+<li><p><strong>n</strong> – Number of tests for the given specification</p></li>
+<li><p><strong>mode</strong> – Tast difficulty (easy, medium or hard)</p></li>
+<li><p><strong>path</strong> – Where to save test outputs (solution and answers)</p></li>
+<li><p><strong>task_index</strong> – Tasks index to solve</p></li>
+<li><p><strong>react</strong> – Implement ReAct or Act</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.try_parsing_date">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">try_parsing_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/react.html#try_parsing_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.try_parsing_date" title="Link to this definition">¶</a></dt>
+<dd><p>Parse str to datetime.</p>
+<p>str must be of those formats: %d/%m/%y, %d/%m/%Y, %d-%m-%Y, %Y-%m-%d</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError if string does not correspond to the specified formats.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="react.try_parsing_time">
+<span class="sig-prename descclassname"><span class="pre">react.</span></span><span class="sig-name descname"><span class="pre">try_parsing_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/react.html#try_parsing_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#react.try_parsing_time" title="Link to this definition">¶</a></dt>
+<dd><p>Parse str to time.</p>
+<p>str must be in this format: %d/%m/%y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError if string does not correspond to the specified formats.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">react module</a><ul>
+<li><a class="reference internal" href="#react.MyStoppingCriteria"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria</span></code></a><ul>
+<li><a class="reference internal" href="#react.MyStoppingCriteria.target_sequence"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria.target_sequence</span></code></a></li>
+<li><a class="reference internal" href="#react.MyStoppingCriteria.prompt"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria.prompt</span></code></a></li>
+<li><a class="reference internal" href="#react.MyStoppingCriteria.last"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria.last</span></code></a></li>
+<li><a class="reference internal" href="#react.MyStoppingCriteria.new_token"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria.new_token</span></code></a></li>
+<li><a class="reference internal" href="#react.MyStoppingCriteria.tokenizer"><code class="docutils literal notranslate"><span class="pre">MyStoppingCriteria.tokenizer</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li><a class="reference internal" href="#react.Parser.call_function"><code class="docutils literal notranslate"><span class="pre">Parser.call_function()</span></code></a></li>
+<li><a class="reference internal" href="#react.Parser.find_json"><code class="docutils literal notranslate"><span class="pre">Parser.find_json()</span></code></a></li>
+<li><a class="reference internal" href="#react.Parser.process"><code class="docutils literal notranslate"><span class="pre">Parser.process()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.React"><code class="docutils literal notranslate"><span class="pre">React</span></code></a><ul>
+<li><a class="reference internal" href="#react.React.model"><code class="docutils literal notranslate"><span class="pre">React.model</span></code></a></li>
+<li><a class="reference internal" href="#react.React.tokenizer"><code class="docutils literal notranslate"><span class="pre">React.tokenizer</span></code></a></li>
+<li><a class="reference internal" href="#react.React.toolkit"><code class="docutils literal notranslate"><span class="pre">React.toolkit</span></code></a></li>
+<li><a class="reference internal" href="#react.React.parser"><code class="docutils literal notranslate"><span class="pre">React.parser</span></code></a></li>
+<li><a class="reference internal" href="#react.React.system_prompt"><code class="docutils literal notranslate"><span class="pre">React.system_prompt</span></code></a></li>
+<li><a class="reference internal" href="#react.React.streamer"><code class="docutils literal notranslate"><span class="pre">React.streamer</span></code></a></li>
+<li><a class="reference internal" href="#react.React.prompt"><code class="docutils literal notranslate"><span class="pre">React.prompt</span></code></a></li>
+<li><a class="reference internal" href="#react.React.done"><code class="docutils literal notranslate"><span class="pre">React.done()</span></code></a></li>
+<li><a class="reference internal" href="#react.React.get_result"><code class="docutils literal notranslate"><span class="pre">React.get_result()</span></code></a></li>
+<li><a class="reference internal" href="#react.React.init_prompt"><code class="docutils literal notranslate"><span class="pre">React.init_prompt()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.Tool"><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#react.Tool.function"><code class="docutils literal notranslate"><span class="pre">Tool.function</span></code></a></li>
+<li><a class="reference internal" href="#react.Tool.name"><code class="docutils literal notranslate"><span class="pre">Tool.name</span></code></a></li>
+<li><a class="reference internal" href="#react.Tool.documentation"><code class="docutils literal notranslate"><span class="pre">Tool.documentation</span></code></a></li>
+<li><a class="reference internal" href="#react.Tool.description"><code class="docutils literal notranslate"><span class="pre">Tool.description</span></code></a></li>
+<li><a class="reference internal" href="#react.Tool.input"><code class="docutils literal notranslate"><span class="pre">Tool.input</span></code></a></li>
+<li><a class="reference internal" href="#react.Tool.output"><code class="docutils literal notranslate"><span class="pre">Tool.output</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.Toolkit"><code class="docutils literal notranslate"><span class="pre">Toolkit</span></code></a><ul>
+<li><a class="reference internal" href="#react.Toolkit.tools"><code class="docutils literal notranslate"><span class="pre">Toolkit.tools</span></code></a></li>
+<li><a class="reference internal" href="#react.Toolkit.names"><code class="docutils literal notranslate"><span class="pre">Toolkit.names</span></code></a></li>
+<li><a class="reference internal" href="#react.Toolkit.tools_description"><code class="docutils literal notranslate"><span class="pre">Toolkit.tools_description()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
+<li><a class="reference internal" href="#react.User.model"><code class="docutils literal notranslate"><span class="pre">User.model</span></code></a></li>
+<li><a class="reference internal" href="#react.User.tokenizer"><code class="docutils literal notranslate"><span class="pre">User.tokenizer</span></code></a></li>
+<li><a class="reference internal" href="#react.User.initprompt"><code class="docutils literal notranslate"><span class="pre">User.initprompt</span></code></a></li>
+<li><a class="reference internal" href="#react.User.path"><code class="docutils literal notranslate"><span class="pre">User.path</span></code></a></li>
+<li><a class="reference internal" href="#react.User.mode"><code class="docutils literal notranslate"><span class="pre">User.mode</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#react.clean"><code class="docutils literal notranslate"><span class="pre">clean()</span></code></a></li>
+<li><a class="reference internal" href="#react.find_user_parameters"><code class="docutils literal notranslate"><span class="pre">find_user_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#react.init_storing_tool"><code class="docutils literal notranslate"><span class="pre">init_storing_tool()</span></code></a></li>
+<li><a class="reference internal" href="#react.init_user_tool"><code class="docutils literal notranslate"><span class="pre">init_user_tool()</span></code></a></li>
+<li><a class="reference internal" href="#react.is_complete"><code class="docutils literal notranslate"><span class="pre">is_complete()</span></code></a></li>
+<li><a class="reference internal" href="#react.management_system"><code class="docutils literal notranslate"><span class="pre">management_system()</span></code></a></li>
+<li><a class="reference internal" href="#react.random_date"><code class="docutils literal notranslate"><span class="pre">random_date()</span></code></a></li>
+<li><a class="reference internal" href="#react.success"><code class="docutils literal notranslate"><span class="pre">success()</span></code></a></li>
+<li><a class="reference internal" href="#react.test_user_retriever"><code class="docutils literal notranslate"><span class="pre">test_user_retriever()</span></code></a></li>
+<li><a class="reference internal" href="#react.try_parsing_date"><code class="docutils literal notranslate"><span class="pre">try_parsing_date()</span></code></a></li>
+<li><a class="reference internal" href="#react.try_parsing_time"><code class="docutils literal notranslate"><span class="pre">try_parsing_time()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="home_management.html"
+                          title="previous chapter">home_management module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/react.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="home_management.html" title="home_management module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LLM 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >scripts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">react module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, MICHELON.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>

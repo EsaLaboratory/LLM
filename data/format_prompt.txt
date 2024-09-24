@@ -1,0 +1,9 @@
+The $JSON_BLOB should only contain a SINGLE action and MUST be formatted as markdown, do NOT return a list of multiple actions. Here is an example of a valid $JSON_BLOB:
+```
+{
+  "action": $TOOL_NAME,
+  "action_input": $INPUT
+}
+```
+Make sure to have the $INPUT in the right format for the tool you are using, and is a correct JSON input.
+The $JSON_BLOB must be formatted as markdown and only use a SINGLE action at a time.

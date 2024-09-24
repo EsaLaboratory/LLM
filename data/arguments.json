@@ -1,0 +1,12 @@
+{
+    "date_start":{"value": "", "type": ["str"], "default":  "2024-05-03 00:00:00"},
+    "date_end": {"value": "", "type": ["str"], "default": "2024-05-05 00:00:00"},
+    "EV": {"value": "", "type": ["int"], "default": 2},
+    "city": {"value": "", "type": ["str"], "default": "Oxford"},
+    "departure_time": {"value": "", "type": ["str"], "default": "08:00:00"},
+    "arrival_time": {"value": "", "type": ["str"], "default": "18:00:00"},
+    "Tmin": {"value": "", "type": ["int", "float"], "default": 18},
+    "Tmax": {"value": "", "type": ["int", "float"], "default": 20},
+    "weather_forecast": {"value": "", "type": ["str"], "default": ""},
+    "prices": {"value": "", "type": ["str"], "default": ""}
+}
